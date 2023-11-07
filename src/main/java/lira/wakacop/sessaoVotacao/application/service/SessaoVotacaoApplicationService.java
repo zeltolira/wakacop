@@ -2,6 +2,7 @@ package lira.wakacop.sessaoVotacao.application.service;
 
 import lira.wakacop.pauta.application.api.PautaCadastradaResponse;
 import lira.wakacop.pauta.application.service.PautaRepository;
+import lira.wakacop.pauta.application.service.PautaService;
 import lira.wakacop.pauta.domain.Pauta;
 import lira.wakacop.sessaoVotacao.application.SessaoVotacaoRepository;
 import lira.wakacop.sessaoVotacao.application.api.SessaoAberturaRequest;
@@ -16,11 +17,13 @@ import org.springframework.stereotype.Service;
 @Log4j2
 public class SessaoVotacaoApplicationService implements SessaoVotacaoService {
     private final SessaoVotacaoRepository sessaoVotacaoRepository;
+    private final PautaService pautaService;
 
     @Override
     public SessaoAberturaResponse abreSessao(SessaoAberturaRequest sessaoAberturaRequest) {
         log.info("[start] SessaoVotacaoApplicationService - abreSessao");
-        SessaoVotacao sessaoVotacao = sessaoVotacaoRepository.salva(new SessaoVotacao(sessaoAberturaRequest));
+        Pauta pauta = pautaService.getPautaPorId(sessaoAberturaRequest.getIdPauta());
+        SessaoVotacao sessaoVotacao = sessaoVotacaoRepository.salva(new SessaoVotacao(sessaoAberturaRequest, pauta));
         log.info("[finish] SessaoVotacaoApplicationService - abreSessao");
         return new SessaoAberturaResponse(sessaoVotacao);
     }
