@@ -28,7 +28,7 @@ public class PautaApplicationService implements PautaService {
     public Pauta getPautaPorId(UUID idPauta) {
         log.info("[start] PautaApplicationService - getPautaPorId");
         Pauta pautaPorId = pautaRepository.buscaPautaPorId(idPauta);
-        log.info("[finish] PautaApplicationService - getPautaPorId")
+        log.info("[finish] PautaApplicationService - getPautaPorId");
         return pautaPorId;
     }
 }

@@ -2,14 +2,18 @@ package lira.wakacop.sessaoVotacao.domain;
 
 import lira.wakacop.pauta.domain.Pauta;
 import lira.wakacop.sessaoVotacao.application.api.SessaoAberturaRequest;
+import lira.wakacop.sessaoVotacao.application.api.VotoRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.springframework.context.annotation.Lazy;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @ToString
@@ -27,11 +31,53 @@ public class SessaoVotacao {
     private LocalDateTime dataAbertura;
     private LocalDateTime dataEncerramento;
 
+    @OneToMany(
+            mappedBy = "sessaoVotacao",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @MapKey(name = "cpfAssociado")
+    private Map<String, VotoPauta> votos;
+
     public SessaoVotacao(SessaoAberturaRequest sessaoAberturaRequest, Pauta pauta) {
         this.idPauta = pauta.getId();
         this.tempoDuracao = sessaoAberturaRequest.getTempoDuracao().orElse(1);
         this.dataAbertura = LocalDateTime.now();
         this.dataEncerramento = dataAbertura.plusMinutes(this.tempoDuracao);
         this.status = StatusSessaoVotacao.ABERTA;
+        votos = new HashMap<>();
+    }
+
+    public VotoPauta recebeVoto(VotoRequest votoRequest){
+        validaSessaoAberta();
+        validaAssociado(votoRequest.getCpfAssosciado());
+        VotoPauta voto = new VotoPauta(this, votoRequest);
+        votos.put(votoRequest.getCpfAssosciado(), voto);
+        return voto;
+    }
+
+    private void validaSessaoAberta() {
+        atualizaStatus();
+        if (this.status.equals(StatusSessaoVotacao.FECHADA)){
+            throw new RuntimeException("Sessão está fechada!");
+        }
+    }
+
+    private void atualizaStatus() {
+        if (this.status.equals(StatusSessaoVotacao.ABERTA)){
+            if(LocalDateTime.now().isAfter(this.dataEncerramento)){
+                fechaSessao();
+            }
+        }
+    }
+
+    private void fechaSessao() {
+        this.status = StatusSessaoVotacao.FECHADA;
+    }
+
+    private void validaAssociado(String cpfAssosciado) {
+        if (this.votos.containsKey(cpfAssosciado)){
+            new RuntimeException("Associado Já voltou nessa Sessão!");
+        }
     }
 }
