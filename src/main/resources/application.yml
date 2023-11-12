@@ -2,3 +2,6 @@ server:
   servlet:
     context-path: /wakacop
 
+logging:
+  level:
+    lira: ${LOG_LEVEL:DEBUG}
