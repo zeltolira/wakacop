@@ -1,14 +1,8 @@
 package lira.wakacop.sessaoVotacao.application.service;
 
-import lira.wakacop.pauta.application.api.PautaCadastradaResponse;
-import lira.wakacop.pauta.application.service.PautaRepository;
 import lira.wakacop.pauta.application.service.PautaService;
 import lira.wakacop.pauta.domain.Pauta;
-import lira.wakacop.sessaoVotacao.application.SessaoVotacaoRepository;
-import lira.wakacop.sessaoVotacao.application.api.SessaoAberturaRequest;
-import lira.wakacop.sessaoVotacao.application.api.SessaoAberturaResponse;
-import lira.wakacop.sessaoVotacao.application.api.VotoRequest;
-import lira.wakacop.sessaoVotacao.application.api.VotoResponse;
+import lira.wakacop.sessaoVotacao.application.api.*;
 import lira.wakacop.sessaoVotacao.domain.SessaoVotacao;
 import lira.wakacop.sessaoVotacao.domain.VotoPauta;
 import lombok.RequiredArgsConstructor;
@@ -41,5 +35,15 @@ public class SessaoVotacaoApplicationService implements SessaoVotacaoService {
         sessaoVotacaoRepository.salva(sessao);
         log.info("[finish] SessaoVotacaoApplicationService - recebeVoto");
         return new VotoResponse(voto);
+    }
+
+    @Override
+    public ResultadoSessaoResponse obtemResultado(UUID idSessao) {
+        log.info("[start] SessaoVotacaoApplicationService - obtemResultado");
+        SessaoVotacao sessao = sessaoVotacaoRepository.buscaPorId(idSessao);
+        ResultadoSessaoResponse resultado = sessao.obtemResultado();
+        sessaoVotacaoRepository.salva(sessao);
+        log.info("[finish] SessaoVotacaoApplicationService - obtemResultado");
+        return resultado;
     }
 }

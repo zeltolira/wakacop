@@ -1,4 +1,4 @@
-package lira.wakacop.sessaoVotacao.application;
+package lira.wakacop.sessaoVotacao.application.service;
 
 import lira.wakacop.sessaoVotacao.domain.SessaoVotacao;
 

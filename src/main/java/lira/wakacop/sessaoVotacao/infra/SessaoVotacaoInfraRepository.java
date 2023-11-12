@@ -1,6 +1,6 @@
 package lira.wakacop.sessaoVotacao.infra;
 
-import lira.wakacop.sessaoVotacao.application.SessaoVotacaoRepository;
+import lira.wakacop.sessaoVotacao.application.service.SessaoVotacaoRepository;
 import lira.wakacop.sessaoVotacao.domain.SessaoVotacao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

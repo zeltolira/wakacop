@@ -7,9 +7,9 @@ import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 
-@Getter
 @ToString
 public class SessaoAberturaRequest {
+    @Getter
     @NotNull
     private UUID idPauta;
     private Integer tempoDuracao;

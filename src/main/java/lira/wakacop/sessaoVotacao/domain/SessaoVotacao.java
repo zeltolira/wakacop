@@ -1,6 +1,7 @@
 package lira.wakacop.sessaoVotacao.domain;
 
 import lira.wakacop.pauta.domain.Pauta;
+import lira.wakacop.sessaoVotacao.application.api.ResultadoSessaoResponse;
 import lira.wakacop.sessaoVotacao.application.api.SessaoAberturaRequest;
 import lira.wakacop.sessaoVotacao.application.api.VotoRequest;
 import lombok.AccessLevel;
@@ -44,14 +45,14 @@ public class SessaoVotacao {
         this.momentoAbertura = LocalDateTime.now();
         this.momentoEncerramento = momentoAbertura.plusMinutes(this.tempoDuracao);
         this.status = StatusSessaoVotacao.ABERTA;
-        votos = new HashMap<>();
+        this.votos = new HashMap<>();
     }
 
-    public VotoPauta recebeVoto(VotoRequest votoRequest){
+       public VotoPauta recebeVoto(VotoRequest votoRequest){
         validaSessaoAberta();
-        validaAssociado(votoRequest.getCpfAssosciado());
+        validaAssociado(votoRequest.getCpfAssociado());
         VotoPauta voto = new VotoPauta(this, votoRequest);
-        votos.put(votoRequest.getCpfAssosciado(), voto);
+        votos.put(votoRequest.getCpfAssociado(), voto);
         return voto;
     }
 
@@ -75,8 +76,32 @@ public class SessaoVotacao {
     }
 
     private void validaAssociado(String cpfAssosciado) {
-        if (this.votos.containsKey(cpfAssosciado)){
-            new RuntimeException("Associado Já voltou nessa Sessão!");
+        if (this.votos.containsKey(cpfAssosciado)) {
+            throw new RuntimeException("Associado Já votou nessa Sessão!");
         }
+    }
+
+    public ResultadoSessaoResponse obtemResultado() {
+        atualizaStatus();
+        return new ResultadoSessaoResponse(this);
+    }
+
+    public Long getTotalVotos() {
+
+        return Long.valueOf(this.votos.size());
+    }
+
+    public Long getTotalSim() {
+        return calculaVotosPorOpcao(OpcaoVoto.SIM);
+    }
+
+    public Long getTotalNao() {
+        return calculaVotosPorOpcao(OpcaoVoto.NAO);
+    }
+
+    private Long calculaVotosPorOpcao(OpcaoVoto opcao) {
+        return votos.values().stream()
+                .filter(voto -> voto.opcaoIgual(opcao))
+                .count();
     }
 }

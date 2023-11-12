@@ -11,6 +11,6 @@ import java.util.UUID;
 public class SessaoAberturaResponse {
     private UUID idSessao;
     public SessaoAberturaResponse(SessaoVotacao sessaoVotacao) {
-        this.idSessao =sessaoVotacao.getId();
+        this.idSessao = sessaoVotacao.getId();
     }
 }
