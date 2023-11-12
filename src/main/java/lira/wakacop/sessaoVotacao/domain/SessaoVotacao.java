@@ -1,5 +1,6 @@
 package lira.wakacop.sessaoVotacao.domain;
 
+import lira.wakacop.associado.application.service.AssociadoService;
 import lira.wakacop.pauta.domain.Pauta;
 import lira.wakacop.sessaoVotacao.application.api.ResultadoSessaoResponse;
 import lira.wakacop.sessaoVotacao.application.api.SessaoAberturaRequest;
@@ -48,9 +49,9 @@ public class SessaoVotacao {
         this.votos = new HashMap<>();
     }
 
-       public VotoPauta recebeVoto(VotoRequest votoRequest){
+       public VotoPauta recebeVoto(VotoRequest votoRequest, AssociadoService associadoService){
         validaSessaoAberta();
-        validaAssociado(votoRequest.getCpfAssociado());
+        validaAssociado(votoRequest.getCpfAssociado(), associadoService);
         VotoPauta voto = new VotoPauta(this, votoRequest);
         votos.put(votoRequest.getCpfAssociado(), voto);
         return voto;
@@ -75,7 +76,12 @@ public class SessaoVotacao {
         this.status = StatusSessaoVotacao.FECHADA;
     }
 
-    private void validaAssociado(String cpfAssosciado) {
+    private void validaAssociado(String cpfAssosciado, AssociadoService associadoService) {
+        associadoService.validaAssociadoAptoVoto(cpfAssosciado);
+        validaVotoDuplicado(cpfAssosciado);
+    }
+
+    private void validaVotoDuplicado(String cpfAssosciado) {
         if (this.votos.containsKey(cpfAssosciado)) {
             throw new RuntimeException("Associado Já votou nessa Sessão!");
         }

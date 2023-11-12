@@ -1,5 +1,6 @@
 package lira.wakacop.sessaoVotacao.application.service;
 
+import lira.wakacop.associado.application.service.AssociadoService;
 import lira.wakacop.pauta.application.service.PautaService;
 import lira.wakacop.pauta.domain.Pauta;
 import lira.wakacop.sessaoVotacao.application.api.*;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class SessaoVotacaoApplicationService implements SessaoVotacaoService {
     private final SessaoVotacaoRepository sessaoVotacaoRepository;
     private final PautaService pautaService;
+    private final AssociadoService associadoService;
 
     @Override
     public SessaoAberturaResponse abreSessao(SessaoAberturaRequest sessaoAberturaRequest) {
@@ -31,7 +33,7 @@ public class SessaoVotacaoApplicationService implements SessaoVotacaoService {
     public VotoResponse recebeVoto(UUID idSessao, VotoRequest novoVoto) {
         log.info("[start] SessaoVotacaoApplicationService - recebeVoto");
         SessaoVotacao sessao = sessaoVotacaoRepository.buscaPorId(idSessao);
-        VotoPauta voto = sessao.recebeVoto(novoVoto);
+        VotoPauta voto = sessao.recebeVoto(novoVoto, associadoService);
         sessaoVotacaoRepository.salva(sessao);
         log.info("[finish] SessaoVotacaoApplicationService - recebeVoto");
         return new VotoResponse(voto);
