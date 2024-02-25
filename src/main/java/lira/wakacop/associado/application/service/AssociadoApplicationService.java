@@ -14,12 +14,12 @@ public class AssociadoApplicationService implements AssociadoService {
     @Override
     public void validaAssociadoAptoVoto(String cpfAssosciado) {
         log.info("[start]AssociadoApplicationService - validaAssociadoAptoVoto");
-        ConsultaCpfResponse consultaCpfesponse =  serproClientFeing.consultaCPF(TOKEN, cpfAssosciado);
-        valida(consultaCpfesponse);
+        ConsultaCpfResponse consultaCpfResponse =  serproClientFeing.consultaCPF(TOKEN, cpfAssosciado);
+        valida(consultaCpfResponse);
         log.info("[finish]AssociadoApplicationService - validaAssociadoAptoVoto");
     }
-    private void valida(ConsultaCpfResponse consultaCpfesponse) {
-        if(consultaCpfesponse.isInvalid()){
+    private void valida(ConsultaCpfResponse consultaCpfResponse) {
+        if(consultaCpfResponse.isInvalid()){
             throw new RuntimeException("CPF Invalido");
         }
     }
